@@ -1,0 +1,165 @@
+/* Make 'Mystical' in the title a darker green for better contrast */
+.hero-title .darker-green {
+  color: #18331a;
+  text-shadow: 0 2px 12px #18331a99, 0 1px 0 #18331a;
+}
+/* Mystical Garden Calculator Styles */
+:root {
+  --dark-green: #224D28;
+  --forest-green: #3F6E45;
+  --mossy-green: #8BA38C;
+  --accent: #E7D9A4;
+  --frosted-bg: rgba(34, 77, 40, 0.6);
+  --frosted-blur: blur(12px);
+  --button-radius: 1.2em;
+  --button-shadow: 0 4px 16px 0 rgba(34, 77, 40, 0.18);
+  --button-hover: #4e8c5a;
+  --button-glow: 0 0 12px 2px #8BA38C88;
+  --font-main: 'EB Garamond', serif;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-main);
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(120deg, #8BA38C44 0%, #224D2888 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><path d="M0,100 Q150,200 300,100 T600,100 T900,100" fill="none" stroke="%238BA38C55" stroke-width="8"/><ellipse cx="150" cy="120" rx="12" ry="24" fill="%233F6E45AA"/><ellipse cx="450" cy="80" rx="10" ry="20" fill="%233F6E45AA"/><ellipse cx="750" cy="130" rx="14" ry="28" fill="%233F6E45AA"/></svg>');
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+.calculator-container {
+  position: relative;
+  z-index: 2;
+  background: var(--frosted-bg);
+  box-shadow: 0 8px 32px 0 rgba(34, 77, 40, 0.37);
+  border-radius: 2em;
+  padding: 2em 1.5em 1.5em 1.5em;
+  backdrop-filter: var(--frosted-blur);
+  -webkit-backdrop-filter: var(--frosted-blur);
+  min-width: 320px;
+  max-width: 95vw;
+  width: 350px;
+  margin: 2em auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid var(--mossy-green);
+}
+.display {
+  width: 90%;
+  min-height: 2.2em;
+  background: rgba(231, 217, 164, 0.18);
+  border-radius: 1em;
+  margin-bottom: 1.2em;
+  font-size: 1.5em;
+  color: var(--accent);
+  text-align: right;
+  padding: 0.4em 0.8em;
+  box-shadow: 0 2px 8px 0 rgba(34, 77, 40, 0.12);
+  letter-spacing: 0.04em;
+  overflow-x: auto;
+  font-family: var(--font-main);
+  border: 1.5px solid var(--accent);
+  user-select: all;
+}
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 1em;
+  width: 100%;
+}
+.buttons button {
+  min-width: 0;
+  min-height: 3em;
+}
+.buttons .zero-btn {
+  grid-column: span 2;
+}
+button {
+  font-family: var(--font-main);
+  font-size: 1.3em;
+  border: none;
+  border-radius: var(--button-radius);
+  background: var(--forest-green);
+  color: var(--accent);
+  box-shadow: var(--button-shadow);
+  padding: 0.7em 0;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  outline: none;
+  position: relative;
+  z-index: 2;
+}
+button:hover, button:focus {
+  background: var(--button-hover);
+  color: #fffbe6;
+  box-shadow: var(--button-glow);
+}
+button.special {
+  background: var(--mossy-green);
+  color: var(--dark-green);
+  font-weight: bold;
+}
+button.special:hover, button.special:focus {
+  background: #a2bfa7;
+  color: var(--accent);
+  box-shadow: 0 0 16px 2px #E7D9A488;
+}
+button.equals {
+  background: var(--accent);
+  color: var(--dark-green);
+  font-weight: bold;
+  font-size: 1.4em;
+  box-shadow: 0 4px 24px 0 #E7D9A488;
+}
+button.equals:hover, button.equals:focus {
+  background: #fffbe6;
+  color: var(--forest-green);
+  box-shadow: 0 0 24px 4px #E7D9A4cc;
+}
+@media (max-width: 500px) {
+  .calculator-container {
+    min-width: 90vw;
+    width: 98vw;
+    padding: 1.2em 0.5em 1em 0.5em;
+  }
+  .display {
+    font-size: 1.3em;
+    padding: 0.5em 0.5em;
+  }
+  .buttons {
+    gap: 0.5em;
+  }
+  .buttons button {
+    font-size: 1em;
+    padding: 0.5em 0;
+  }
+}

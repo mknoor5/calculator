@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    .hero-title {
+      font-family: 'EB Garamond', serif;
+      font-size: 2.5em;
+      color: #E7D9A4;
+      text-align: center;
+      margin-top: 1.2em;
+      margin-bottom: 0.5em;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px #224D28cc, 0 1px 0 #3F6E45;
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mystical Garden Calculator</title>
+  <!-- Google Fonts for a classic serif look -->
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+  <h1 class="hero-title"><span class="darker-green">Mystical Garden Calculator</h1>
+    <div class="calculator-container">
+      <div class="display" id="display">0</div>
+      <div class="buttons">
+    <button class="special" data-action="clear">C</button>
+    <button class="special" data-action="delete">⌫</button>
+    <button class="special" data-action="plus-minus">+/−</button>
+    <button class="special" data-action="divide">÷</button>
+    <button data-action="7">7</button>
+    <button data-action="8">8</button>
+    <button data-action="9">9</button>
+    <button class="special" data-action="multiply">×</button>
+    <button data-action="4">4</button>
+    <button data-action="5">5</button>
+    <button data-action="6">6</button>
+    <button class="special" data-action="subtract">−</button>
+    <button data-action="1">1</button>
+    <button data-action="2">2</button>
+    <button data-action="3">3</button>
+    <button class="special" data-action="add">+</button>
+    <button data-action="0" class="zero-btn">0</button>
+    <button class="special" data-action="decimal">.</button>
+    <button class="equals" data-action="equals">=</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Calculator state
+    let display = document.getElementById('display');
+    let currentInput = '';
+    let lastResult = null;
+    let lastPressed = '';
+
+    // Helper: Check if char is operator
+    function isOperator(char) {
+      return ['+', '-', '*', '/'].includes(char);
+    }
+
+    // Helper: Evaluate expression with order of operations
+    function calculate(expr) {
+      try {
+        // Only allow numbers, operators, and decimal
+        if (!/^[-+*/.\d\s]+$/.test(expr)) return 'Err';
+        // Prevent invalid operator sequences
+        if (/([+\-*/]{2,})/.test(expr)) return 'Err';
+        // Remove trailing operator
+        expr = expr.replace(/[+\-*/.]$/, '');
+        // Use Function constructor for safe eval
+        // eslint-disable-next-line no-new-func
+        let result = Function('return ' + expr)();
+        if (typeof result === 'number' && isFinite(result)) {
+          return result;
+        } else {
+          return 'Err';
+        }
+      } catch {
+        return 'Err';
+      }
+    }
+
+    // Update display
+    function updateDisplay(val) {
+      display.textContent = val;
+    }
+
+    // Handle button press
+    document.querySelector('.buttons').addEventListener('click', function(e) {
+      if (!e.target.matches('button')) return;
+      const action = e.target.getAttribute('data-action');
+      if (!action) return;
+      if (action >= '0' && action <= '9') {
+        // Number pressed
+        if (currentInput === '0') currentInput = '';
+        currentInput += action;
+        updateDisplay(currentInput);
+      } else if (action === 'decimal') {
+        // Decimal point
+        let parts = currentInput.split(/([+\-*/])/);
+        let last = parts[parts.length - 1];
+        if (!last.includes('.')) {
+          currentInput += currentInput === '' ? '0.' : '.';
+          updateDisplay(currentInput);
+        }
+      } else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) {
+        // Operator
+        let op = { add: '+', subtract: '-', multiply: '*', divide: '/' }[action];
+        if (currentInput === '' && lastResult !== null) {
+          currentInput = lastResult + op;
+        } else if (currentInput !== '' && !isOperator(currentInput.slice(-1))) {
+          currentInput += op;
+        } else if (currentInput !== '' && isOperator(currentInput.slice(-1))) {
+          // Replace last operator
+          currentInput = currentInput.slice(0, -1) + op;
+        }
+        updateDisplay(currentInput);
+      } else if (action === 'clear') {
+        // Clear
+        currentInput = '';
+        lastResult = null;
+        updateDisplay('0');
+      } else if (action === 'delete') {
+        // Delete last character
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay(currentInput || '0');
+      } else if (action === 'plus-minus') {
+        // Toggle sign of last number
+        let parts = currentInput.match(/(\d*\.?\d+|[+\-*/])/g) || [];
+        if (parts.length) {
+          let i = parts.length - 1;
+          while (i >= 0 && isOperator(parts[i])) i--;
+          if (i >= 0) {
+            let num = parts[i];
+            if (num.startsWith('-')) {
+              parts[i] = num.slice(1);
+            } else {
+              parts[i] = '-' + num;
+            }
+            currentInput = parts.join('');
+            updateDisplay(currentInput);
+          }
+        }
+      } else if (action === 'equals') {
+        // Calculate
+        let result = calculate(currentInput);
+        updateDisplay(result);
+        lastResult = result !== 'Err' ? result : null;
+        currentInput = '';
+      }
+      lastPressed = action;
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      const keyMap = {
+        'Enter': 'equals',
+        '=': 'equals',
+        'Escape': 'clear',
+        'c': 'clear',
+        'C': 'clear',
+        '+': 'add',
+        '-': 'subtract',
+        '*': 'multiply',
+        '/': 'divide',
+        '.': 'decimal',
+      };
+      if ((e.key >= '0' && e.key <= '9') || keyMap[e.key]) {
+        e.preventDefault();
+        let action = keyMap[e.key] || e.key;
+        let btn = document.querySelector(`[data-action="${action}"]`);
+        if (btn) btn.click();
+      }
+    });
+  </script>
+</body>
+  <div style="position: fixed; bottom: 1.2em; right: 1.5em; color: #18331a; font-family: 'EB Garamond', serif; font-size: 1.05em; opacity: 0.7; letter-spacing: 0.03em; z-index: 100; pointer-events: none; user-select: none;">
+  <span style="font-style: italic; font-size: 1.35em;">by Mohamed Noor</span>
+  </div>
+</html>
